@@ -54,3 +54,11 @@ Sprints are implementation checkpoints. Live PRD success verification will be re
 - Live Supabase tests with disposable confirmed users pass direct API tenant/department isolation, wrong-department writes, invitation acceptance/reuse denial and notes persistence.
 - Production Supabase Site URL set to https://ea-action-tracker.vercel.app. Custom SMTP is currently absent; ordinary team signup confirmation delivery requires provider setup. This external setup is pending, not counted as verified signup delivery.
 - Browser invitation creation and acceptance passed for a second disposable user: Finance only, then independent workspace switch to an empty board. A Finance viewer has zero mutation controls, and a guessed Assets meeting URL returns the not-found view.
+
+## OpenRouter and MCP release — 2 October 2026
+
+- Added server-only OpenRouter note extraction, bounded/validated draft schema, editable review and atomic persistence to the selected meeting. Saved drafts carry reviewed AI metadata. Reminder drafts are selectable text; no automatic messages are sent.
+- Added the official MCP SDK with four read-only tools on a stateless Streamable HTTP endpoint, protected resource discovery, Supabase OAuth consent, one approved workspace per client, safe login return and connection revocation.
+- Applied 0003_ai_mcp.sql successfully in production. PostgreSQL tests confirm existing tenant/department protections, OAuth workspace scope, direct mutation and team RPC denial, audience hook and revocation. Audit triggers record status/deadline changes and item deletion.
+- TypeScript, ESLint, production build and seven ranking/AI-schema/MCP protocol/security tests passed. No existing user actions were edited during integration verification.
+- OpenRouter requests and external client OAuth remain pending supplied key, OAuth/DCR activation and custom access-token hook configuration. Setup is documented in AI_MCP_SETUP.md; provider and client end-to-end verification is not claimed yet.

@@ -3,9 +3,9 @@ import { useActionState } from 'react';
 import type { Department } from '@/lib/data';
 import { authenticate, createWorkspace, acceptInvite, inviteMember, manageMember, revokeInvite, type TeamState } from '@/lib/team-actions';
 function Feedback({ state }: { state: TeamState }) { return <>{state.error && <p className="form-error" role="alert">{state.error}</p>}{state.success && <p className="form-success" role="status">{state.success}</p>}</>; }
-export function AuthForm({ invite = '' }: { invite?: string }) {
+export function AuthForm({ invite = '',next='' }: { invite?: string;next?:string }) {
   const [state, action, pending] = useActionState(authenticate, {});
-  return <form action={action} className="editor-form" aria-busy={pending}><input type="hidden" name="invite" value={invite}/><label className="full">Email<input type="email" name="email" required autoComplete="email" maxLength={254} /></label><label className="full">Password<input type="password" name="password" required minLength={8} maxLength={128} autoComplete="current-password" /></label><div className="full"><Feedback state={state}/><div className="form-actions"><button name="mode" value="login" disabled={pending}>{pending ? 'Please wait…' : 'Sign in'}</button><button name="mode" value="signup" className="secondary" disabled={pending}>Create account</button></div></div></form>;
+  return <form action={action} className="editor-form" aria-busy={pending}><input type="hidden" name="invite" value={invite}/><input type="hidden" name="next" value={next}/><label className="full">Email<input type="email" name="email" required autoComplete="email" maxLength={254} /></label><label className="full">Password<input type="password" name="password" required minLength={8} maxLength={128} autoComplete="current-password" /></label><div className="full"><Feedback state={state}/><div className="form-actions"><button name="mode" value="login" disabled={pending}>{pending ? 'Please wait…' : 'Sign in'}</button><button name="mode" value="signup" className="secondary" disabled={pending}>Create account</button></div></div></form>;
 }
 export function WorkspaceForm() {
   const [state, action, pending] = useActionState(createWorkspace, {});
@@ -27,3 +27,4 @@ export function RevokeInviteForm({ id }: { id: string }) {
   const [state, action, pending] = useActionState(revokeInvite, {});
   return <form action={action}><input type="hidden" name="invite_id" value={id}/><button className="secondary" disabled={pending}>Revoke invite</button><Feedback state={state}/></form>;
 }
+

@@ -2,9 +2,10 @@ import {PGlite} from '@electric-sql/pglite';
 import {readFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 const db=new PGlite();
-await db.exec(`create role anon; create role authenticated; create schema auth;
+await db.exec(`create role anon; create role authenticated; create role supabase_auth_admin; create schema auth;
 create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
 create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
+create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb $$;
 grant usage on schema auth to anon,authenticated;
 insert into auth.users values
 ('10000000-0000-4000-8000-000000000001','owner-a@example.com',now()),
@@ -13,6 +14,7 @@ insert into auth.users values
 const repo=new URL('../../',import.meta.url);
 await db.exec(await readFile(new URL('supabase/migrations/0001_init.sql',repo),'utf8'));
 await db.exec(await readFile(new URL('supabase/migrations/0002_team_workspaces.sql',repo),'utf8'));
+await db.exec(await readFile(new URL('supabase/migrations/0003_ai_mcp.sql',repo),'utf8'));
 async function as(id){await db.exec(`reset role; select set_config('request.jwt.claim.sub','${id}',false); set role authenticated;`)}
 async function fails(sql,args,pattern){await assert.rejects(db.query(sql,args),pattern)}
 const A='10000000-0000-4000-8000-000000000001',B='10000000-0000-4000-8000-000000000002',V='10000000-0000-4000-8000-000000000003';
@@ -94,4 +96,29 @@ assert.equal((await db.query('select count(*)::int n from departments')).rows[0]
 await fails("insert into departments(workspace_id,name) values('00000000-0000-4000-8000-000000000001','Blocked')",[],/permission denied/);
 await fails("select public.create_workspace('Anonymous')",[],/permission denied/);
 console.log('PASS: migration execution; department seeds; strict department isolation and reassignment; expired/revoked invitations; unverified denial; private tenant isolation; CRUD; viewer read-only; recipient-bound single-use invite; cross-tenant FK; tenant immutability; owner protection; anonymous demo read-only.');
+await as(A);
+const clientId='20000000-0000-4000-8000-000000000001';
+await db.query("insert into mcp_connections(user_id,client_id,client_name,workspace_id) values($1,$2,'Test MCP',$3)",[A,clientId,wa]);
+await as(B);
+await fails("insert into mcp_connections(user_id,client_id,client_name,workspace_id) values($1,'20000000-0000-4000-8000-000000000002','Wrong workspace',$2)",[B,wa],/row-level security/);
+await as(A);
+await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({client_id:clientId})]);
+assert.equal((await db.query('select count(*)::int n from meetings where workspace_id=$1',[wa])).rows[0].n,2);
+assert.equal((await db.query('select count(*)::int n from meetings where workspace_id=$1',[wb])).rows[0].n,0);
+await fails("insert into meetings(workspace_id,department_id,date,topic) values($1,$2,current_date,'OAuth write blocked')",[wa,da],/row-level security/);
+assert.equal((await db.query("update action_items set status='Open' where id=$1 returning id",[item])).rows.length,0);
+assert.equal((await db.query('delete from action_items where id=$1 returning id',[item])).rows.length,0);
+await fails("select public.create_workspace('OAuth workspace')",[],/OAuth clients/);
+await fails('select public.list_workspace_members($1)',[wa],/OAuth clients/);
+await fails("select public.set_workspace_member_role($1,$2,'admin',null)",[wa,V],/OAuth clients/);
+assert.equal((await db.query('delete from mcp_connections returning client_id')).rows.length,0);
+await db.exec("reset role; select set_config('request.jwt.claims','{}',false)");
+const hook=(await db.query('select public.tracker_oauth_access_token_hook($1::jsonb) result',[JSON.stringify({user_id:A,client_id:clientId,claims:{aud:'authenticated',sub:A,role:'authenticated'}})])).rows[0].result;
+assert.deepEqual(hook.claims.aud,['authenticated','https://ea-action-tracker.vercel.app/mcp']);
+await as(A);
+assert.ok((await db.query('select count(*)::int n from audit_logs where item_id=$1',[item])).rows[0].n>0);
+await db.query('delete from mcp_connections where client_id=$1',[clientId]);
+await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({client_id:clientId})]);
+assert.equal((await db.query('select count(*)::int n from meetings where workspace_id=$1',[wa])).rows[0].n,0);
+console.log('PASS: AI/MCP migration; approved-workspace reads; OAuth direct writes and management RPCs denied; audience hook; revocation; immutable audit history.');
 await db.close();

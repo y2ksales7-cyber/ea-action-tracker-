@@ -15,6 +15,7 @@ const links = [
   ['/', '◫', 'Board'], ['/meetings', '▤', 'Meetings'],
   ['/departments', '◈', 'Departments'], ['/reports', '↗', 'Reports'],
   ['/team', '◎', 'Team'],
+  ['/integrations', '✧', 'AI & connections'],
 ];
 
 function NavSubmit({ children, pendingLabel, className = '' }: { children: string; pendingLabel: string; className?: string }) {

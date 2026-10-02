@@ -35,6 +35,8 @@ export async function authenticate(_: TeamState, form: FormData): Promise<TeamSt
     if (error) return { error: 'Sign-in failed. Check your email and password, and confirm your email first.' };
   }
   const invite = String(form.get('invite') ?? '');
+  const next = String(form.get('next') ?? '');
+  if (/^\/oauth\/consent\?authorization_id=[a-zA-Z0-9%_-]{1,300}$/.test(next)) redirect(next);
   redirect(/^[0-9a-f-]{72}$/i.test(invite) ? '/join?token='+encodeURIComponent(invite) : '/');
 }
 export async function createWorkspace(_: TeamState, form: FormData): Promise<TeamState> {

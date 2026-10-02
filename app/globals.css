@@ -270,6 +270,11 @@ table .text-link { margin: 0; }
 .member-controls .form-error, .member-controls .form-success { grid-column: 1 / -1; }
 .team-more { margin-top: 24px; }
 .split-layout + .panel { margin-top: 24px; }
+.ai-drafts { display: grid; gap: 20px; margin-top: 24px; }
+.ai-drafts fieldset { min-width: 0; border: 1px solid #d7e1d7; border-radius: 12px; padding: 18px; }
+.ai-drafts legend { padding: 0 8px; font-weight: 600; }
+.ai-drafts .checkbox { margin-bottom: 14px; }
+.panel + .split-layout { margin-top: 24px; }
 @media (max-width: 1180px) { .member-controls { grid-template-columns: minmax(0,1fr); align-items: start; } }
 @media (max-width: 720px) {
   .auth-shell { grid-template-columns: 1fr; gap: 26px; padding: max(32px,env(safe-area-inset-top)) 20px max(32px,env(safe-area-inset-bottom)); min-height: 100dvh; align-content: center; }

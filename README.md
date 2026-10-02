@@ -18,3 +18,7 @@ Owners and admins see the whole workspace. Department editors can manage only th
 Deploy through Git pushes to main, never `vercel deploy`. Public Supabase URL/anon key belong in app environment; privileged administration keys never do. The optional scripts/verify-live-tenancy.mjs test requires an explicitly supplied local test admin key and fixture path, uses disposable accounts/workspaces, and cleans them with --cleanup. It never sends invite emails or alters existing user records.
 
 Next.js 15, React 19, TypeScript, Tailwind and Supabase. Dates use Asia/Kuala_Lumpur. Read all docs before modifying the app. See docs/BUILD_LOG.md for verification status.
+
+## AI and MCP
+
+Meeting notes can be extracted through OpenRouter into editable action drafts, then saved after review. Unfinished actions offer reminder drafts without email sending. The `/mcp` endpoint exposes four read-only tools behind Supabase OAuth consent, verified resource audience and department RLS. Apply 0003 and configure the OpenRouter key, OAuth Server and access-token hook as described in [docs/AI_MCP_SETUP.md](docs/AI_MCP_SETUP.md). Live provider generation and external client sign-in remain pending until those settings are supplied and verified.
