@@ -4,7 +4,7 @@ A Supabase-backed demo workspace for executive assistants to capture meeting com
 
 ## Core workflow
 
-Open the board, choose New Meeting, select Finance and save a topic/date. Add action items with assignees, priorities and deadlines. Return to the board: active commitments are ranked by priority then deadline, with red overdue and amber due-this-week flags. Expand an item to update status and notes or edit/delete it. Switch to Status groups for Overdue, Open, In Progress and Done lanes. Departments and Reports show live counts.
+Open the board, choose New Meeting, select Finance and save a topic/date. Add action items with assignees, priorities and deadlines. Return to the board: active commitments are ranked by priority then deadline, with red overdue and amber due-this-week flags. Expand an item to update status and notes or edit/delete it. Switch to Status groups for Open, In Progress and Done lanes; the Overdue filter isolates overdue follow-ups. Departments and Reports show live counts.
 
 ## Development and verification
 
@@ -18,3 +18,4 @@ Do not rerun the seed migration against an existing schema: its seed inserts are
 ## v1 scope
 
 Next.js 15, React 19, TypeScript, Tailwind and Supabase. Dates use Asia/Kuala_Lumpur. The v1 workspace is public and editable; use demo data. Auth/owner-scoped RLS and AI are later sprints, intentionally absent from v1. Read all documents in `/docs` before modifying the app.
+

@@ -2,32 +2,32 @@
 
 ## Sprint 1 — DB + Core CRUD (no login wall)
 **Goal:** Database ready, meetings + action items can be created/listed.
-- [ ] Run migration SQL; seed 5 departments + demo meetings + demo items
-- [ ] `lib/data/` data-access layer for departments, meetings, action_items
-- [ ] Server actions: createMeeting, updateMeeting, deleteMeeting, createItem, updateItem, deleteItem
-- [ ] Meetings page: list + create form (date, department dropdown, topic)
-- [ ] Meeting detail page: list items + add-item form (description, assignee, priority, deadline)
-- [ ] Seed data renders on first load (anonymous)
+- [x] Run migration SQL; seed 5 departments + demo meetings + demo items
+- [x] `lib/data/` data-access layer for departments, meetings, action_items
+- [x] Server actions: createMeeting, updateMeeting, deleteMeeting, createItem, updateItem, deleteItem
+- [x] Meetings page: list + create form (date, department dropdown, topic)
+- [x] Meeting detail page: list items + add-item form (description, assignee, priority, deadline)
+- [x] Seed data renders on first load (anonymous)
 
 **DoD:** Anonymous visitor sees seeded meetings + items; can create a new meeting and add an action item; data persists to Supabase.
 
 ## Sprint 2 — Ranked Board + Overdue Flags ← v1 functional milestone
 **Goal:** The one core workflow — see prioritized actions and who to chase.
-- [ ] Board page: all action items, grouped by status (Open / In Progress / Done)
-- [ ] Rank by priority weight DESC then deadline ASC
-- [ ] Overdue items flagged red; due-this-week flagged amber
-- [ ] Filter by department + status
-- [ ] Inline status update (Open → In Progress → Done) with notes
-- [ ] Left sidebar nav (Board, Meetings, Departments) + mobile hamburger
-- [ ] Empty state, loading state, error state for board
+- [x] Board page: all action items, grouped by status (Open / In Progress / Done)
+- [x] Rank by priority weight DESC then deadline ASC
+- [x] Overdue items flagged red; due-this-week flagged amber
+- [x] Filter by department + status
+- [x] Inline status update (Open → In Progress → Done) with notes
+- [x] Left sidebar nav (Board, Meetings, Departments) + mobile hamburger
+- [x] Empty state, loading state, error state for board
 
 **DoD (success scenario):** EA creates a Finance meeting, adds 3 items with deadlines, opens Board — items ranked by priority+deadline, overdue item at top in red, due-soon item amber. EA marks one item Done and it moves to the Done group. This is the **v1 functional milestone**.
 
 ## Sprint 3 — Departments view + Reports basics
 **Goal:** Lightweight department-level views.
-- [ ] Departments page: per-department item counts + open vs done
-- [ ] Simple report: items by department, overdue count
-- [ ] Sorting + filtering refinements
+- [x] Departments page: per-department item counts + open vs done
+- [x] Simple report: items by department, overdue count
+- [x] Sorting + filtering refinements
 
 **DoD:** Each department page shows its items and overdue counts.
 
