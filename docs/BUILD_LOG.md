@@ -38,3 +38,8 @@ Sprints are implementation checkpoints. Live PRD success verification will be re
 - Vercel GitHub app installation prepared for only `y2ksales7-cyber/ea-action-tracker-`; awaiting confirmation at final Install. Without this connection, Git pushes do not trigger deployments.
 
 - Final configured production build, strict TypeScript, ESLint and all ranking tests passed after browser-tested fixes.
+
+## Deployment connection — 2 October 2026
+- GitHub confirmed the Vercel app was already installed. Its existing installation settings were preserved.
+- Connected the existing Vercel project `ll-c168/ea-action-tracker-` to `y2ksales7-cyber/ea-action-tracker-`.
+- Pushing this recorded connection to main to trigger the first Git-based app deployment.
