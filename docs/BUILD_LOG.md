@@ -17,3 +17,11 @@ Sprints are implementation checkpoints. Live PRD success verification will be re
 - Completed items clear their flags and can be viewed with the Done or All filters.
 - TypeScript, ESLint, production build and three ranking tests passed.
 - Live database and browser success scenario remain pending Vercel email sign-in.
+
+## Sprint 3
+- Added department overview/detail views with live active, done, overdue and completion counts.
+- Added report table and totals, linking back to department workspaces.
+- Added a real anonymous database verification script with scoped temporary-record cleanup.
+- Strict TypeScript, ESLint and production build passed; all three ranking tests passed.
+- Browser inspection found the provisioned Vercel project has no connected Git repository. Git pushes succeed but cannot auto-deploy until its GitHub integration is connected.
+- Vercel browser sign-in works; CLI device authorization remains incomplete, so live table/CRUD verification is still pending.

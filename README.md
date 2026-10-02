@@ -1,41 +1,20 @@
-# vibe-stack-supabase
+# EA Action Tracker
 
-Next.js 15 + Supabase starter for shipping vibe-coded apps fast. Clone, provision, build.
+A Supabase-backed demo workspace for executive assistants to capture meeting commitments, rank follow-ups, and track department accountability.
 
-## Stack
+## Core workflow
 
-| Layer | Choice |
-|---|---|
-| Framework | Next.js 15 (App Router, React 19, Server Actions) |
-| Language | TypeScript strict |
-| Styles | Tailwind CSS v4 (CSS-first, no config file) |
-| Auth + DB | Supabase (`@supabase/ssr`) |
-| Package manager | Bun |
-| Deploy | Vercel |
+Open the board, choose New Meeting, select Finance and save a topic/date. Add action items with assignees, priorities and deadlines. Return to the board: active commitments are ranked by priority then deadline, with red overdue and amber due-this-week flags. Expand an item to update status and notes or edit/delete it. Switch to Status groups for Overdue, Open, In Progress and Done lanes. Departments and Reports show live counts.
 
-## Quick start
+## Development and verification
 
-```bash
-bun install
-cp .env.example .env.local   # fill in your Supabase keys
-bun dev
-```
+1. Sign in to Vercel, link to the existing project, then run `vercel env pull .env.local`.
+2. Run `pnpm install`, `pnpm typecheck`, `pnpm lint`, `pnpm test`, and `pnpm build`.
+3. Run `node --env-file=.env.local scripts/verify-db.mjs` to check the existing tables and five departments. Add `--crud` to verify anonymous writes with temporary records cleaned up afterward.
+4. Run `pnpm dev` and perform the browser scenario in `docs/TEST_PLAN.md`.
 
-Open http://localhost:3000. Edit `app/page.tsx` to start building.
+Do not rerun the seed migration against an existing schema: its seed inserts are not idempotent. If tables are absent, apply `supabase/migrations/0001_init.sql` once through the provisioned Supabase project's SQL editor or an authorized Postgres connection. Deploy with Git pushes to main; do not deploy local files with the Vercel CLI. See `docs/BUILD_LOG.md` for actual verification status.
 
-## Provisioning a new project
+## v1 scope
 
-Use the `/new-vibe-project <name>` skill (see `claude-dotfiles` repo) which:
-1. Clones this template and renames it
-2. Creates a new GitHub repo and pushes
-3. Creates a Supabase project and injects URL + anon key
-4. Creates a Vercel project linked to the GitHub repo
-5. Triggers first deploy and returns the preview URL
-
-## Working with AI
-
-See [CLAUDE.md](CLAUDE.md) for conventions. This repo is pre-wired for gstack — start with `/office-hours`.
-
-## Switching to Neon
-
-If you need Postgres without Supabase (e.g. prefer Drizzle ORM + Clerk for auth), a `vibe-stack-neon` variant is planned. For now: fork this and swap `@supabase/ssr` for `drizzle-orm` + `@neondatabase/serverless`, add Clerk or NextAuth.
+Next.js 15, React 19, TypeScript, Tailwind and Supabase. Dates use Asia/Kuala_Lumpur. The v1 workspace is public and editable; use demo data. Auth/owner-scoped RLS and AI are later sprints, intentionally absent from v1. Read all documents in `/docs` before modifying the app.
