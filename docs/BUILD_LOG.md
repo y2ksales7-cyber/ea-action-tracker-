@@ -10,3 +10,10 @@
 - Existing 0001 migration remains unchanged; it has not been rerun blindly.
 
 Sprints are implementation checkpoints. Live PRD success verification will be recorded separately after environment access is available.
+
+## Sprint 2
+- Added ranked and grouped board views, department/status filters, search, overdue lane, and due-this-week panel.
+- Inline status and notes updates persist through server actions and revalidate every workspace page.
+- Completed items clear their flags and can be viewed with the Done or All filters.
+- TypeScript, ESLint, production build and three ranking tests passed.
+- Live database and browser success scenario remain pending Vercel email sign-in.
