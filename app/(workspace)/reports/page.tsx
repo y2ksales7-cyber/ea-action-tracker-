@@ -1,0 +1,11 @@
+import Link from 'next/link';
+import { readWorkspace } from '@/lib/data';
+import { deadlineFlag, today, formatDate } from '@/lib/ranking';
+export const dynamic = 'force-dynamic';
+export default async function Reports() {
+  const { departments, items } = await readWorkspace();
+  const date = today();
+  const done = items.filter(i => i.status === 'Done').length;
+  const overdue = items.filter(i => deadlineFlag(i, date) === 'overdue').length;
+  return <><div className="page-heading"><div><p className="eyebrow">WORKSPACE SNAPSHOT / {formatDate(date)}</p><h1>Reports</h1><p className="subtitle">Where work is moving, and where it needs attention.</p></div></div><div className="stats-grid"><div className="stat"><span>TOTAL ACTION ITEMS</span><strong>{items.length}</strong><small>Across your accessible departments</small></div><div className="stat"><span>IN PROGRESS</span><strong>{items.filter(i => i.status === 'In Progress').length}</strong><small>Commitments underway</small></div><div className="stat red"><span>OVERDUE</span><strong>{overdue}</strong><small>Excludes completed items</small></div><div className="stat"><span>COMPLETION</span><strong>{items.length ? Math.round(done / items.length * 100) : 0}%</strong><small>{done} items completed</small></div></div><section className="panel"><h2>Commitments by department</h2><div className="table-scroll"><table><thead><tr><th>Department</th><th>Total</th><th>Open</th><th>In Progress</th><th>Done</th><th>Overdue</th><th>Due this week</th></tr></thead><tbody>{departments.map(d => { const rows = items.filter(i => i.department_id === d.id); return <tr key={d.id}><th><Link className="text-link" href={`/departments/${d.id}`}>{d.name} ↗</Link></th><td>{rows.length}</td><td>{rows.filter(i => i.status === 'Open').length}</td><td>{rows.filter(i => i.status === 'In Progress').length}</td><td>{rows.filter(i => i.status === 'Done').length}</td><td className="red-text">{rows.filter(i => deadlineFlag(i, date) === 'overdue').length}</td><td>{rows.filter(i => deadlineFlag(i, date) === 'soon').length}</td></tr>; })}</tbody></table></div><p className="report-note">Overdue and due-this-week are deadline flags on active items; they overlap the Open and In Progress columns. Dates follow Asia/Kuala_Lumpur.</p></section></>;
+}

@@ -28,3 +28,13 @@
 ## Cross-device
 - Mobile: sidebar collapses to hamburger; board items stack vertically; forms full-width
 - Desktop: sidebar visible; board items in responsive grid
+## Team release verification
+
+- Authenticated owner creates a workspace and five departments are available.
+- Owner/admin invites an editor or viewer with one assigned department. Wrong email, reused, expired and revoked codes fail.
+- Finance users see Finance only in board, due panel, meetings, departments and reports. Guessing an Assets meeting/item UUID yields no content; direct API requests remain isolated.
+- Viewers see no create/edit/delete/status controls and direct writes are denied.
+- Owners/admins retain the full EA workflow. Create a Finance meeting and three ranked actions, then mark an item Done with notes; refresh preserves it.
+- Switch workspaces: counts and records change together, and teams cannot reference each other's departments/meetings through submitted IDs.
+- Phone 390 x 844: no body overflow, bottom navigation works, menu locks background scroll and Escape restores focus, creation/status controls remain usable.
+- Production signup delivery is verified only after custom SMTP is configured and an ordinary teammate confirms their email.

@@ -43,3 +43,14 @@ Sprints are implementation checkpoints. Live PRD success verification will be re
 - GitHub confirmed the Vercel app was already installed. Its existing installation settings were preserved.
 - Connected the existing Vercel project `ll-c168/ea-action-tracker-` to `y2ksales7-cyber/ea-action-tracker-`.
 - Pushing this recorded connection to main to trigger the first Git-based app deployment.
+
+## Team, department privacy, and mobile release
+
+- User confirmed each department sees only its own actions. Owners/admins coordinate across departments; editors/viewers must have one assigned department.
+- Applied 0002_team_workspaces.sql successfully in the provisioned Supabase project; migration is atomic and legacy records remain archived read-only.
+- Replaced anonymous application clients with verified cookie-backed sessions, private route layout, team creation/switching, recipient-bound expiring invitations, role/department management, and viewer controls.
+- New desktop/mobile mockup and responsive UI implemented. Actual 390 x 844 phone workflow creates a Finance meeting and three actions, ranks overdue/due-soon correctly, updates status/notes, and persists after refresh. Menu scroll lock and Escape focus restoration passed with no body overflow.
+- PostgreSQL integration tests pass tenant/department boundaries, viewer write denial, recipient/expiry/revocation checks, removed-member denial, immutable tenant IDs and composite foreign keys.
+- Live Supabase tests with disposable confirmed users pass direct API tenant/department isolation, wrong-department writes, invitation acceptance/reuse denial and notes persistence.
+- Production Supabase Site URL set to https://ea-action-tracker.vercel.app. Custom SMTP is currently absent; ordinary team signup confirmation delivery requires provider setup. This external setup is pending, not counted as verified signup delivery.
+- Browser invitation creation and acceptance passed for a second disposable user: Finance only, then independent workspace switch to an empty board. A Finance viewer has zero mutation controls, and a guessed Assets meeting URL returns the not-found view.

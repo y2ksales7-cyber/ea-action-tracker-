@@ -1,5 +1,6 @@
 'use server';
 import { database } from '@/lib/data';
+import { writeContext } from '@/lib/workspaces';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 export type FormState = { error?: string; success?: string };
@@ -31,18 +32,20 @@ function message(error: unknown): FormState {
 export async function saveMeeting(_: FormState, form: FormData): Promise<FormState> {
   let meetingId = '';
   try {
-    const db = database();
+    const context = await writeContext();
+    const db = await database();
     const department_id = id(form, 'department_id');
-    const payload = { department_id, date: date(form, 'date'), topic: field(form, 'topic', 200), attendees: String(form.get('attendees') ?? '').split(',').map(v => v.trim()).filter(Boolean) };
+    if (String(form.get('attendees') ?? '').length > 2000) throw new Error('Attendees must be under 2,000 characters.');
+    const payload = { workspace_id: context.workspace.id, department_id, date: date(form, 'date'), topic: field(form, 'topic', 200), attendees: String(form.get('attendees') ?? '').split(',').map(v => v.trim()).filter(Boolean) };
     if (form.get('id')) {
       meetingId = id(form, 'id');
-      const { data: current, error: lookup } = await db.from('meetings').select('department_id').eq('id', meetingId).single();
+      const { data: current, error: lookup } = await db.from('meetings').select('department_id').eq('workspace_id', context.workspace.id).eq('id', meetingId).single();
       if (lookup) throw new Error('Meeting no longer exists. Refresh and retry.');
       if (current.department_id !== department_id) throw new Error('The department of an existing meeting cannot be changed.');
-      const { error, data } = await db.from('meetings').update(payload).eq('id', meetingId).select('id').single();
+      const { error, data } = await db.from('meetings').update(payload).eq('workspace_id', context.workspace.id).eq('id', meetingId).select('id').single();
       if (error || !data) throw new Error(error?.message ?? 'Meeting no longer exists.');
     } else {
-      const { data, error } = await db.from('meetings').insert(payload).select('id').single();
+      const { data, error } = await db.from('meetings').insert({ ...payload, user_id: context.user.id }).select('id').single();
       if (error) throw new Error(error.message);
       meetingId = data.id;
     }
@@ -52,8 +55,9 @@ export async function saveMeeting(_: FormState, form: FormData): Promise<FormSta
 }
 export async function deleteMeeting(_: FormState, form: FormData): Promise<FormState> {
   try {
+    const context = await writeContext();
     if (form.get('confirm') !== 'yes') throw new Error('Confirm deletion of this meeting and its action items.');
-    const { error, data } = await database().from('meetings').delete().eq('id', id(form, 'id')).select('id').single();
+    const { error, data } = await (await database()).from('meetings').delete().eq('workspace_id', context.workspace.id).eq('id', id(form, 'id')).select('id').single();
     if (error || !data) throw new Error(error?.message ?? 'Meeting no longer exists.');
     refresh();
   } catch (error) { return message(error); }
@@ -61,14 +65,15 @@ export async function deleteMeeting(_: FormState, form: FormData): Promise<FormS
 }
 export async function saveItem(_: FormState, form: FormData): Promise<FormState> {
   try {
-    const db = database();
+    const context = await writeContext();
+    const db = await database();
     const meeting_id = id(form, 'meeting_id');
-    const { data: meeting, error: lookup } = await db.from('meetings').select('department_id').eq('id', meeting_id).single();
+    const { data: meeting, error: lookup } = await db.from('meetings').select('department_id').eq('workspace_id', context.workspace.id).eq('id', meeting_id).single();
     if (lookup || !meeting) throw new Error('Meeting no longer exists. Refresh and retry.');
     const notes = String(form.get('notes') ?? '').trim();
     if (notes.length > 5000) throw new Error('Notes must be under 5,000 characters.');
-    const payload = { meeting_id, department_id: meeting.department_id, description: field(form, 'description', 1000), assignee: field(form, 'assignee', 200), priority: choice(form, 'priority', ['High', 'Medium', 'Low']), deadline: date(form, 'deadline'), status: choice(form, 'status', ['Open', 'In Progress', 'Done']), notes };
-    const query = form.get('id') ? db.from('action_items').update(payload).eq('id', id(form, 'id')).eq('meeting_id', meeting_id) : db.from('action_items').insert(payload);
+    const payload = { workspace_id: context.workspace.id, meeting_id, department_id: meeting.department_id, description: field(form, 'description', 1000), assignee: field(form, 'assignee', 200), priority: choice(form, 'priority', ['High', 'Medium', 'Low']), deadline: date(form, 'deadline'), status: choice(form, 'status', ['Open', 'In Progress', 'Done']), notes };
+    const query = form.get('id') ? db.from('action_items').update(payload).eq('workspace_id', context.workspace.id).eq('id', id(form, 'id')).eq('meeting_id', meeting_id) : db.from('action_items').insert({ ...payload, user_id: context.user.id });
     const { error, data } = await query.select('id').single();
     if (error || !data) throw new Error(error?.message ?? 'Action item no longer exists.');
     refresh();
@@ -77,9 +82,10 @@ export async function saveItem(_: FormState, form: FormData): Promise<FormState>
 }
 export async function updateStatus(_: FormState, form: FormData): Promise<FormState> {
   try {
+    const context = await writeContext();
     const notes = String(form.get('notes') ?? '').trim();
     if (notes.length > 5000) throw new Error('Notes must be under 5,000 characters.');
-    const { error, data } = await database().from('action_items').update({ status: choice(form, 'status', ['Open', 'In Progress', 'Done']), notes }).eq('id', id(form, 'id')).select('id').single();
+    const { error, data } = await (await database()).from('action_items').update({ status: choice(form, 'status', ['Open', 'In Progress', 'Done']), notes }).eq('workspace_id', context.workspace.id).eq('id', id(form, 'id')).select('id').single();
     if (error || !data) throw new Error(error?.message ?? 'Action item no longer exists.');
     refresh();
     return { success: 'Status and notes saved.' };
@@ -87,8 +93,9 @@ export async function updateStatus(_: FormState, form: FormData): Promise<FormSt
 }
 export async function deleteItem(_: FormState, form: FormData): Promise<FormState> {
   try {
+    const context = await writeContext();
     if (form.get('confirm') !== 'yes') throw new Error('Confirm deletion of this action item.');
-    const { error, data } = await database().from('action_items').delete().eq('id', id(form, 'id')).select('id').single();
+    const { error, data } = await (await database()).from('action_items').delete().eq('workspace_id', context.workspace.id).eq('id', id(form, 'id')).select('id').single();
     if (error || !data) throw new Error(error?.message ?? 'Action item no longer exists.');
     refresh();
     return { success: 'Action item deleted.' };

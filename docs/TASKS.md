@@ -33,11 +33,11 @@
 
 ## Sprint 4 — Lock it down (auth + RLS)
 **Goal:** Secure for real use.
-- [ ] Supabase Auth (signup/login)
-- [ ] Add `user_id` population on insert
-- [ ] Replace permissive RLS with owner-scoped policies (`auth.uid() = user_id`)
-- [ ] Role check stub: EA / CEO / HOD (read scope differences)
-- [ ] Protect all routes; redirect to login
+- [x] Supabase Auth (signup/login); custom SMTP delivery still needs provider setup
+- [x] Add `user_id` and selected workspace population on insert
+- [x] Replace permissive RLS with workspace membership and strict assigned-department policies
+- [x] Owner/admin/editor/viewer roles; department editors/viewers only see their assigned department
+- [x] Protect workspace routes; redirect logged-out visitors to login
 
 **DoD:** Logged-out user cannot read/write data; logged-in EA sees only their own workspace.
 
