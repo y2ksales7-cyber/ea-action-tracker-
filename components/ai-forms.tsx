@@ -19,5 +19,3 @@ export function ReminderForm({itemId}:{itemId:string}) {
   const [state,action,pending] = useActionState(composeReminder,{});
   return <details><summary>Draft a reminder</summary><p className="field-hint">The action description, assignee, deadline and status will be sent to OpenRouter. Nothing is emailed.</p><form action={action}><input type="hidden" name="item_id" value={itemId}/><button className="secondary" disabled={pending}>{pending ? 'Drafting…' : 'Generate reminder draft'}</button>{state.error && <p className="form-error" role="alert">{state.error}</p>}{state.reminder && <label>Reminder draft<textarea rows={6} readOnly value={state.reminder} onFocus={e=>e.target.select()}/><small>Select the text to copy and share it yourself.</small></label>}</form></details>;
 }
-
-

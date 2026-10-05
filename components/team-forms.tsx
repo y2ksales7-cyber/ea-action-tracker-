@@ -27,4 +27,3 @@ export function RevokeInviteForm({ id }: { id: string }) {
   const [state, action, pending] = useActionState(revokeInvite, {});
   return <form action={action}><input type="hidden" name="invite_id" value={id}/><button className="secondary" disabled={pending}>Revoke invite</button><Feedback state={state}/></form>;
 }
-

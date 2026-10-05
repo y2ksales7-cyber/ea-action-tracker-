@@ -34,5 +34,7 @@ export async function POST(request: Request) {
     response.headers.set('Cache-Control','no-store'); return response;
   } finally {await server.close();}
 }
-export async function GET() {return unauthorized();}
+export async function GET(request: Request) {
+  return request.headers.has('authorization') ? new Response(null,{status:405,headers:{Allow:'POST'}}) : unauthorized();
+}
 export async function DELETE() {return new Response(null,{status:405,headers:{Allow:'POST'}});}
